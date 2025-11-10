@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "json-formula-evaluator"
+version = "0.1.0"
+description = "Evaluate formulas from json schema"
+readme = "README.md"
+requires-python = ">=3.12"
+license = {text = "Proprietary"}
+authors = [{ name="Juho Kurki", email="juho.kurki@kihu.fi" }]
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[project.urls]
+Homepage = "https://gitlab.com/k2315/json-formula-evaluator"

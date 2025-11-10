@@ -1,0 +1,10 @@
+dist/
+.pytest_cache/
+.vscode/
+__pycache__/
+*.pyc
+env/
+venv/
+.idea/
+.DS_Store
+json_formula_evaluator.egg-info/
