@@ -23,7 +23,7 @@ Requirements
 ## Install
 
 ```bash
-pip install git@gitlab.com:k2315/json-formula-evaluator.git
+pip install git+ssh://git@gitlab.com/k2315/json-formula-evaluator.git
 ```
 
 ## Usage
