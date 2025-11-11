@@ -1,2 +1,1 @@
-from .evaluator import FormulaEvaluator
-from .evaluator import FormulaEvaluationError
+from .evaluator import FormulaEvaluator, FormulaEvaluationError, formula_function

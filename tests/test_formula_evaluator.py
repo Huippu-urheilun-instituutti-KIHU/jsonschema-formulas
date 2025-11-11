@@ -17,7 +17,7 @@ def test_basic_evaluation():
         "b": 10
     }
     evaluator = FormulaEvaluator(schema)
-    evaluator.evaluate(data)
+    data = evaluator.evaluate(data)
     assert data["sum_ab"] == 15
 
 def test_average_of_field_in_objects():
@@ -47,7 +47,7 @@ def test_average_of_field_in_objects():
         ]
     }
     evaluator = FormulaEvaluator(schema)
-    evaluator.evaluate(data)
+    data = evaluator.evaluate(data)
     assert data["average_value"] == 20.0
 
 def test_avg_of_n_max():
@@ -68,7 +68,7 @@ def test_avg_of_n_max():
         "numbers": [1, 3, 5, 7, 9]
     }
     evaluator = FormulaEvaluator(schema)
-    evaluator.evaluate(data)
+    data = evaluator.evaluate(data)
     assert data["avg_top_2"] == 8.0  # (9 + 7) / 2
 
 def test_avg_of_n_min():
@@ -89,7 +89,7 @@ def test_avg_of_n_min():
         "numbers": [10, 20, 30, 40, 50]
     }
     evaluator = FormulaEvaluator(schema)
-    evaluator.evaluate(data)
+    data = evaluator.evaluate(data)
     assert data["avg_bottom_3"] == 20.0  # (10 + 20 + 30) / 3
 
 def test_max_object_by_field():
@@ -120,7 +120,7 @@ def test_max_object_by_field():
         ]
     }
     evaluator = FormulaEvaluator(schema)
-    evaluator.evaluate(data)
+    data = evaluator.evaluate(data)
     assert data["top_scorer"] == {"name": "Bob", "score": 92}
 
 def test_min_object_by_field():
@@ -151,7 +151,7 @@ def test_min_object_by_field():
         ]
     }
     evaluator = FormulaEvaluator(schema)
-    evaluator.evaluate(data)
+    data = evaluator.evaluate(data)
     assert data["lowest_scorer"] == {"name": "Alice", "score": 85}
 
 def test_x_temporary_field_removal():
@@ -176,6 +176,6 @@ def test_x_temporary_field_removal():
         "b": 4
     }
     evaluator = FormulaEvaluator(schema)
-    evaluator.evaluate(data)
+    data = evaluator.evaluate(data)
     assert "temp_sum" not in data
     assert data["sum_ab"] == 7

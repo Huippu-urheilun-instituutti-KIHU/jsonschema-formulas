@@ -50,7 +50,7 @@ data = {
 
 evaluator = FormulaEvaluator(schema)
 evaluator.evaluate(data)
-# {'a': 3, 'b': 4, 'sum_ab': 7}
+# {'a': 5, 'b': 10, 'sum_ab': 15}
 
 ```
 
@@ -94,7 +94,6 @@ data = {
 }
 evaluator = FormulaEvaluator(schema)
 evaluator.evaluate(data)
-
 # {'a': 3, 'b': 4, 'sum_ab': 7}
 
 ```
@@ -309,7 +308,6 @@ data = {
 
 evaluator = FormulaEvaluator(schema)
 evaluator.evaluate(data)
-
 # {'values': [3, 4, 1, 10, 5], 'best_2_avg': 7.5}
 
 ```
@@ -475,7 +473,6 @@ data = {
 
 evaluator = FormulaEvaluator(schema)
 evaluator.evaluate(data)
-
 # {
 #     'items': [
 #         {'name': 'Bob', 'score': 92},
@@ -485,4 +482,37 @@ evaluator.evaluate(data)
 #     'highest_scorer': {'name': 'Bob', 'score': 92}
 # }
 
+```
+
+## Extend FormulaEvaluator
+
+```python
+from json_formula_evaluator import FormulaEvaluator, formula_function
+
+class CustomFormulaEvaluator(FormulaEvaluator):
+    @formula_function
+    def custom_function(x):
+        return x * 2
+
+
+schema = {
+    "type": "object",
+    "properties": {
+        "a": {"type": "number"},
+        "b": {"type": "number"},
+        "custom_ab": {
+            "type": "number",
+            "x-formula": "custom_function(a) + custom_function(b)"
+        }
+    }
+}
+
+data = {
+    "a": 5,
+    "b": 10
+}
+
+evaluator = CustomFormulaEvaluator(schema)
+evaluator.evaluate(data)
+# {'a': 5, 'b': 10, 'custom_ab': 30}
 ```
