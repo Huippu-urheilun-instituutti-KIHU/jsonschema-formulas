@@ -12,6 +12,7 @@ class FormulaEvaluationError(Exception):
     pass
 
 class FormulaEvaluator:
+
     base_allowed_functions = {
         "sum": sum,
         "min": min,
@@ -23,6 +24,10 @@ class FormulaEvaluator:
     }
 
     def __init__(self, schema: dict):
+        """Initialize the FormulaEvaluator with a JSON schema.
+        Args:
+            schema (dict): The JSON schema defining the structure and formulas.
+        """
         self.schema = schema
         self.data = {}
 
@@ -45,28 +50,72 @@ class FormulaEvaluator:
         return self.data
 
     @formula_function
-    def avg_of_n_max(lst: list, n: int|float) -> float:
+    def avg_of_n_max(lst: list, n: int) -> float:
+        """Calculate the average of the top n maximum values in a list.
+
+        Args:
+            lst (list): The list of numbers.
+            n (int): The number of top elements to consider.
+
+        Returns:
+            float: The average of the top n maximum values.
+        """
+
         top_n = sorted(lst)[-n:]
         return sum(top_n) / max(1, len(top_n))
 
     @formula_function
-    def avg_of_n_min(lst: list, n: int|float) -> float:
+    def avg_of_n_min(lst: list, n: int) -> float:
+        """Calculate the average of the bottom n minimum values in a list.
+
+        Args:
+            lst (list): The list of numbers.
+            n (int): The number of bottom elements to consider.
+
+        Returns:
+            float: The average of the bottom n minimum values.
+        """
+
         bottom_n = sorted(lst)[:n]
         return sum(bottom_n) / max(1, len(bottom_n))
 
     @formula_function
     def average_of_field_in_objects(objects: list, field: str) -> float:
+        """Calculate the average of a specific field in a list of objects.
+        Args:
+            objects (list): The list of objects (dictionaries).
+            field (str): The field name to average.
+        Returns:
+            float: The average value of the specified field.
+        """
+
         values = [obj.get(field, 0) for obj in objects if isinstance(obj, dict)]
         return sum(values) / max(1, len(values))
 
     @formula_function
     def max_object_by_field(objects: list, field: str) -> dict:
+        """Find the object with the maximum value for a specific field.
+        Args:
+            objects (list): The list of objects (dictionaries).
+            field (str): The field name to compare.
+        Returns:
+            dict: The object with the maximum value for the specified field.
+        """
+
         if not objects:
             return {}
         return max(objects, key=lambda obj: obj.get(field, float('-inf')))
 
     @formula_function
     def min_object_by_field(objects: list, field: str) -> dict:
+        """Find the object with the minimum value for a specific field.
+        Args:
+            objects (list): The list of objects (dictionaries).
+            field (str): The field name to compare.
+        Returns:
+            dict: The object with the minimum value for the specified field.
+        """
+
         if not objects:
             return {}
         return min(objects, key=lambda obj: obj.get(field, float('inf')))
