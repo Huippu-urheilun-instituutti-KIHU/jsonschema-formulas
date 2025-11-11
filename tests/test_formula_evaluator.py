@@ -1,4 +1,4 @@
-from json_formula_evaluator import FormulaEvaluator
+from json_formula_evaluator import FormulaEvaluator, FormulaEvaluationError, formula_function
 
 def test_basic_evaluation():
     schema = {
@@ -179,3 +179,52 @@ def test_x_temporary_field_removal():
     data = evaluator.evaluate(data)
     assert "temp_sum" not in data
     assert data["sum_ab"] == 7
+
+def test_error_handling():
+    schema = {
+        "type": "object",
+        "properties": {
+            "a": {"type": "number"},
+            "b": {"type": "number"},
+            "invalid_formula": {
+                "type": "number",
+                "x-formula": "a / b"  # Potential division by zero
+            }
+        }
+    }
+    data = {
+        "a": 10,
+        "b": 0
+    }
+    evaluator = FormulaEvaluator(schema)
+    try:
+        evaluator.evaluate(data)
+        assert False, "Expected FormulaEvaluationError due to division by zero"
+    except FormulaEvaluationError as e:
+        assert "division by zero" in str(e)
+
+def test_custom_function_extension():
+    from json_formula_evaluator import formula_function
+
+    class CustomFormulaEvaluator(FormulaEvaluator):
+
+        @formula_function
+        def double(x):
+            return x * 2
+
+    schema = {
+        "type": "object",
+        "properties": {
+            "value": {"type": "number"},
+            "doubled_value": {
+                "type": "number",
+                "x-formula": "double(value)"
+            }
+        }
+    }
+    data = {
+        "value": 7
+    }
+    evaluator = CustomFormulaEvaluator(schema)
+    data = evaluator.evaluate(data)
+    assert data["doubled_value"] == 14
