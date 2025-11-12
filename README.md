@@ -1,4 +1,4 @@
-# JSON formula evaluator
+# JSON Schema formulas
 
 A small library to evaluate calculated fields defined in a JSON Schema. JSON Formula Evaluator lets you declare formulas (using the `x-formula` keyword) inside a schema and computes derived values from other properties in the input data, while keeping results type-checked against the schema.
 
@@ -23,13 +23,13 @@ Requirements
 ## Install
 
 ```bash
-pip install git+ssh://git@gitlab.com/k2315/json-formula-evaluator.git
+pip install git+ssh://git@gitlab.com/k2315/jsonschema-formulas.git
 ```
 
 ## Usage
 
 ```python
-from json_formula_evaluator import FormulaEvaluator
+from jsonschema_formulas import FormulaEvaluator
 
 schema = {
     "type": "object",
@@ -65,7 +65,7 @@ Temporary fields are helper properties in the schema that hold intermediate comp
 Use temporary fields to break complex calculations into simpler steps or to cache intermediate results without altering the external data shape.
 
 ```python
-from json_formula_evaluator import FormulaEvaluator
+from jsonschema_formulas import FormulaEvaluator
 schema = {
     "type": "object",
     "properties": {
@@ -105,7 +105,7 @@ This means that formulas should reference fields starting from the root (e.g., o
 Using absolute paths ensures that the evaluation works correctly regardless of where the field is located in the schema.
 
 ```python
-from json_formula_evaluator import FormulaEvaluator
+from jsonschema_formulas import FormulaEvaluator
 schema = {
     "type": "object",
     "properties": {
@@ -146,7 +146,7 @@ data = evaluator.evaluate(data)
 Calculates the total sum of all numbers in a list.
 
 ```python
-from json_formula_evaluator import FormulaEvaluator
+from jsonschema_formulas import FormulaEvaluator
 schema = {
     "type": "object",
     "properties": {
@@ -176,7 +176,7 @@ evaluator.evaluate(data)
 Returns the smallest value in a list.
 
 ```python
-from json_formula_evaluator import FormulaEvaluator
+from jsonschema_formulas import FormulaEvaluator
 schema = {
     "type": "object",
     "properties": {
@@ -206,7 +206,7 @@ evaluator.evaluate(data)
 Returns the largest value in a list.
 
 ```python
-from json_formula_evaluator import FormulaEvaluator
+from jsonschema_formulas import FormulaEvaluator
 schema = {
     "type": "object",
     "properties": {
@@ -236,7 +236,7 @@ evaluator.evaluate(data)
 Returns the number of elements in a list.
 
 ```python
-from json_formula_evaluator import FormulaEvaluator
+from jsonschema_formulas import FormulaEvaluator
 schema = {
     "type": "object",
     "properties": {
@@ -265,7 +265,7 @@ evaluator.evaluate(data)
 Applies a given function to each element in a list.
 
 ```python
-from json_formula_evaluator import FormulaEvaluator
+from jsonschema_formulas import FormulaEvaluator
 schema = {
     "type": "object",
     "properties": {
@@ -296,7 +296,7 @@ evaluator.evaluate(data)
 Returns a new list with all elements sorted in ascending order.
 
 ```python
-from json_formula_evaluator import FormulaEvaluator
+from jsonschema_formulas import FormulaEvaluator
 schema = {
     "type": "object",
     "properties": {
@@ -327,7 +327,7 @@ evaluator.evaluate(data)
 Calculates the average of the n highest values in a list.
 
 ```python
-from json_formula_evaluator import FormulaEvaluator
+from jsonschema_formulas import FormulaEvaluator
 schema = {
     "type": "object",
     "properties": {
@@ -358,7 +358,7 @@ evaluator.evaluate(data)
 Calculates the average of the n lowest values in a list.
 
 ```python
-from json_formula_evaluator import FormulaEvaluator
+from jsonschema_formulas import FormulaEvaluator
 schema = {
     "type": "object",
     "properties": {
@@ -389,7 +389,7 @@ evaluator.evaluate(data)
 Calculates the average of a specific field across a list of objects.
 
 ```python
-from json_formula_evaluator import FormulaEvaluator
+from jsonschema_formulas import FormulaEvaluator
 schema = {
     "type": "object",
     "properties": {
@@ -435,7 +435,7 @@ evaluator.evaluate(data)
 Returns the object with the highest value in the specified field.
 
 ```python
-from json_formula_evaluator import FormulaEvaluator
+from jsonschema_formulas import FormulaEvaluator
 schema = {
     "type": "object",
     "properties": {
@@ -483,7 +483,7 @@ evaluator.evaluate(data)
 Returns the object with the lowest value in the specified field.
 
 ```python
-from json_formula_evaluator import FormulaEvaluator
+from jsonschema_formulas import FormulaEvaluator
 schema = {
     "type": "object",
     "properties": {
@@ -536,7 +536,7 @@ meaning it does not receive a self parameter. You should therefore define your c
 without self as the first argument.
 
 ```python
-from json_formula_evaluator import FormulaEvaluator, formula_function
+from jsonschema_formulas import FormulaEvaluator, formula_function
 
 class CustomFormulaEvaluator(FormulaEvaluator):
     @formula_function

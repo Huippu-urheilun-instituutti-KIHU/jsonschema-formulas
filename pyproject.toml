@@ -3,7 +3,7 @@ requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "json-formula-evaluator"
+name = "jsonschema-formulas"
 version = "0.1.0"
 description = "Evaluate formulas from json schema"
 readme = "README.md"
@@ -16,4 +16,4 @@ dependencies = []
 dev = ["pytest"]
 
 [project.urls]
-Homepage = "https://gitlab.com/k2315/json-formula-evaluator"
+Homepage = "https://gitlab.com/k2315/jsonschema-formulas"

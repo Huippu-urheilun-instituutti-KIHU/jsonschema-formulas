@@ -1,4 +1,4 @@
-from json_formula_evaluator import FormulaEvaluator, FormulaEvaluationError, formula_function
+from jsonschema_formulas import FormulaEvaluator, FormulaEvaluationError, formula_function
 
 def test_basic_evaluation():
     schema = {
@@ -231,7 +231,7 @@ def test_error_handling():
         assert "division by zero" in str(e)
 
 def test_custom_function_extension():
-    from json_formula_evaluator import formula_function
+    from jsonschema_formulas import formula_function
 
     class CustomFormulaEvaluator(FormulaEvaluator):
 
