@@ -98,6 +98,47 @@ evaluator.evaluate(data)
 
 ```
 
+## Nested fields
+
+When defining formulas in nested computed fields, you must always use absolute paths when referencing fields.
+This means that formulas should reference fields starting from the root (e.g., outer['x'] instead of just x).
+Using absolute paths ensures that the evaluation works correctly regardless of where the field is located in the schema.
+
+```python
+from json_formula_evaluator import FormulaEvaluator
+schema = {
+    "type": "object",
+    "properties": {
+        "outer": {
+            "type": "object",
+            "properties": {
+                "x": {"type": "number"},
+                "y": {"type": "number"},
+                "product_xy": {
+                    "type": "number",
+                    "x-formula": "outer['x'] * outer['y']"
+                }
+            }
+        }
+    }
+}
+data = {
+    "outer": {
+        "x": 4,
+        "y": 3
+    }
+}
+evaluator = FormulaEvaluator(schema)
+data = evaluator.evaluate(data)
+# {
+#     'outer': {
+#         'x': 4,
+#         'y': 3,
+#         'product_xy': 12
+#     }
+# }
+```
+
 ## Available functions
 
 ### sum _(Python built-in)_
@@ -485,6 +526,14 @@ evaluator.evaluate(data)
 ```
 
 ## Extend FormulaEvaluator
+
+You can extend the FormulaEvaluator class to add your own custom formula functions.
+To do this, subclass FormulaEvaluator and define new functions decorated with @formula_function.
+These functions will then be available for use in your schema formulas, just like any built-in functions.
+
+**Note:** The @formula_function decorator automatically defines the function as a static method,
+meaning it does not receive a self parameter. You should therefore define your custom functions
+without self as the first argument.
 
 ```python
 from json_formula_evaluator import FormulaEvaluator, formula_function
