@@ -449,54 +449,6 @@ schema = {
                 }
             }
         },
-        "lowest_scorer": {
-            "type": "object",
-            "x-formula": "min_object_by_field(items, 'score')"
-        }
-    }
-}
-
-data = {
-    "items": [
-        {"name": "Bob", "score": 92},
-        {"name": "Alice", "score": 85},
-        {"name": "Charlie", "score": 88}
-    ]
-}
-
-evaluator = FormulaEvaluator(schema)
-evaluator.evaluate(data)
-
-# {
-#     'items': [
-#         {'name': 'Bob', 'score': 92},
-#         {'name': 'Alice', 'score': 85},
-#         {'name': 'Charlie', 'score': 88}
-#     ],
-#     'lowest_scorer': {'name': 'Alice', 'score': 85}
-# }
-
-```
-
-### min_object_by_field
-
-Returns the object with the lowest value in the specified field.
-
-```python
-from jsonschema_formulas import FormulaEvaluator
-schema = {
-    "type": "object",
-    "properties": {
-        "items": {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "name": {"type": "string"},
-                    "score": {"type": "number"}
-                }
-            }
-        },
         "highest_scorer": {
             "type": "object",
             "x-formula": "max_object_by_field(items, 'score')"
@@ -521,6 +473,53 @@ evaluator.evaluate(data)
 #         {'name': 'Charlie', 'score': 88}
 #     ],
 #     'highest_scorer': {'name': 'Bob', 'score': 92}
+# }
+
+```
+
+### min_object_by_field
+
+Returns the object with the lowest value in the specified field.
+
+```python
+from jsonschema_formulas import FormulaEvaluator
+schema = {
+    "type": "object",
+    "properties": {
+        "items": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string"},
+                    "score": {"type": "number"}
+                }
+            }
+        },
+        "lowest_scorer": {
+            "type": "object",
+            "x-formula": "min_object_by_field(items, 'score')"
+        }
+    }
+}
+
+data = {
+    "items": [
+        {"name": "Bob", "score": 92},
+        {"name": "Alice", "score": 85},
+        {"name": "Charlie", "score": 88}
+    ]
+}
+
+evaluator = FormulaEvaluator(schema)
+evaluator.evaluate(data)
+# {
+#     'items': [
+#         {'name': 'Bob', 'score': 92},
+#         {'name': 'Alice', 'score': 85},
+#         {'name': 'Charlie', 'score': 88}
+#     ],
+#     'lowest_scorer': {'name': 'Alice', 'score': 85}
 # }
 
 ```
