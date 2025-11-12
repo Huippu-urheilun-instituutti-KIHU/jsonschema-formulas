@@ -20,6 +20,33 @@ def test_basic_evaluation():
     data = evaluator.evaluate(data)
     assert data["sum_ab"] == 15
 
+def test_nested_properties():
+    schema = {
+        "type": "object",
+        "properties": {
+            "outer": {
+                "type": "object",
+                "properties": {
+                    "x": {"type": "number"},
+                    "y": {"type": "number"},
+                    "product_xy": {
+                        "type": "number",
+                        "x-formula": "outer['x'] * outer['y']"
+                    }
+                }
+            }
+        }
+    }
+    data = {
+        "outer": {
+            "x": 4,
+            "y": 3
+        }
+    }
+    evaluator = FormulaEvaluator(schema)
+    data = evaluator.evaluate(data)
+    assert data["outer"]["product_xy"] == 12
+
 def test_average_of_field_in_objects():
     schema = {
         "type": "object",

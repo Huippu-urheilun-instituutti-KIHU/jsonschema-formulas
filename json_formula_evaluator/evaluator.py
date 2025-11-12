@@ -30,6 +30,8 @@ class FormulaEvaluator:
         """
         self.schema = schema
         self.data = {}
+        self.__allowed_functions = self.base_allowed_functions.copy()
+        self.__allowed_functions.update(self.__get_formula_functions())
 
     def evaluate(self, data: dict) -> dict:
         """Evaluate the given data against the schema.
@@ -121,13 +123,23 @@ class FormulaEvaluator:
         return min(objects, key=lambda obj: obj.get(field, float('inf')))
 
     def __process_properties(self, properties: dict, data_node: dict):
+        """Process the properties of the schema against the data node.
+
+        Args:
+            properties (dict): The schema properties.
+            data_node (dict): The data node to process.
+
+        Raises:
+            TypeError: If data_node is not a dict.
+            FormulaEvaluationError: If there is an error during formula evaluation.
+        """
+
         for field, props in properties.items():
-            # Evaluate formula if present
             if "x-formula" in props:
                 formula = props["x-formula"]
-                # Safe evaluation context
+                # define allowed names every time to capture current data state
                 allowed_names = {k: v for k, v in self.data.items()}
-                allowed_names.update(self.__allowed_functions())
+                allowed_names.update(self.__allowed_functions)
                 try:
                     result = eval(formula, {"__builtins__": {}}, allowed_names)
                     # Ensure data_node is a dict and set the value
@@ -143,16 +155,13 @@ class FormulaEvaluator:
                     data_node[field] = {}
                 self.__process_properties(props["properties"], data_node[field])
 
-            # If array of objects, recurse into each element
-            elif props.get("type") == "array" and "items" in props:
-                items = props["items"]
-                if field in data_node and isinstance(data_node[field], list):
-                    if items.get("type") == "object" and "properties" in items:
-                        for elem in data_node[field]:
-                            if isinstance(elem, dict):
-                                self.__process_properties(items["properties"], elem)
-
     def __drop_temporary_fields(self, properties: dict, data_node: dict):
+        """Drop temporary fields marked with 'x-temporary' from the data node.
+        Args:
+            properties (dict): The schema properties.
+            data_node (dict): The data node to process.
+        """
+
         for field, props in properties.items():
             # Drop temporary fields
             if props.get("x-temporary") and field in data_node:
@@ -163,20 +172,17 @@ class FormulaEvaluator:
                 if field in data_node and isinstance(data_node[field], dict):
                     self.__drop_temporary_fields(props["properties"], data_node[field])
 
-            # If array of objects, recurse into each element
-            elif props.get("type") == "array" and "items" in props:
-                items = props["items"]
-                if field in data_node and isinstance(data_node[field], list):
-                    if items.get("type") == "object" and "properties" in items:
-                        for elem in data_node[field]:
-                            if isinstance(elem, dict):
-                                self.__drop_temporary_fields(items["properties"], elem)
+    @classmethod
+    def __get_formula_functions(cls):
+        """
+        Collect all formula_function decorated static methods.
 
-    def __allowed_functions(self):
-        """Return base + all @formula_function decorated static methods."""
-        functions = self.base_allowed_functions.copy()
+        Returns:
+            dict: A dictionary of function names to function objects.
+        """
+        functions = {}
 
-        for name, attr in self.__class__.__dict__.items():
+        for name, attr in cls.__dict__.items():
             if isinstance(attr, staticmethod):
                 fn = attr.__func__
                 if getattr(fn, "_is_formula_function", False):
