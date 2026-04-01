@@ -231,8 +231,6 @@ def test_error_handling():
         assert "division by zero" in str(e)
 
 def test_custom_function_extension():
-    from jsonschema_formulas import formula_function
-
     class CustomFormulaEvaluator(FormulaEvaluator):
 
         @formula_function
@@ -255,3 +253,152 @@ def test_custom_function_extension():
     evaluator = CustomFormulaEvaluator(schema)
     data = evaluator.evaluate(data)
     assert data["doubled_value"] == 14
+
+def test_custom_evaluator_base_functions():
+    class CustomFormulaEvaluator(FormulaEvaluator):
+
+        @formula_function
+        def double(x):
+            return x * 2
+
+    schema = {
+        "type": "object",
+        "properties": {
+            "items": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "name": {"type": "string"},
+                        "score": {"type": "number"}
+                    }
+                }
+            },
+            "top_scorer": {
+                "type": "object",
+                "x-formula": "max_object_by_field(items, 'score')"
+            }
+        }
+    }
+    data = {
+        "items": [
+            {"name": "Alice", "score": 85},
+            {"name": "Bob", "score": 92},
+            {"name": "Charlie", "score": 88}
+        ]
+    }
+    evaluator = CustomFormulaEvaluator(schema)
+    data = evaluator.evaluate(data)
+    assert data["top_scorer"] == {"name": "Bob", "score": 92}
+
+
+def test_this_keyword():
+    schema = {
+        "type": "object",
+        "properties": {
+            "items": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "name": {"type": "string"},
+                        "score": {"type": "number"},
+                        "double_score": {
+                            "type": "number",
+                            "x-formula": "_this['score'] * 2"
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    data = {
+        "items": [
+            {"name": "Bob", "score": 92},
+            {"name": "Alice", "score": 85},
+            {"name": "Charlie", "score": 88}
+        ]
+    }
+
+    expected_data = {
+        "items": [
+            {"name": "Bob", "score": 92, "double_score": 184},
+            {"name": "Alice", "score": 85, "double_score": 170},
+            {"name": "Charlie", "score": 88, "double_score": 176}
+        ]
+    }
+
+    evaluator = FormulaEvaluator(schema)
+    data = evaluator.evaluate(data)
+    assert data == expected_data
+
+def test_this_keyword_nested_arrays():
+    schema = {
+        "type": "object",
+        "properties": {
+            "groups": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "name": {"type": "string"},
+                        "members": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {"type": "string"},
+                                    "score": {"type": "number"},
+                                    "double_score": {
+                                        "type": "number",
+                                        "x-formula": "_this['score'] * 2"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    data = {
+        "groups": [
+            {
+                "name": "Group A",
+                "members": [
+                    {"name": "Bob", "score": 92},
+                    {"name": "Alice", "score": 85}
+                ]
+            },
+            {
+                "name": "Group B",
+                "members": [
+                    {"name": "Charlie", "score": 88}
+                ]
+            }
+        ]
+    }
+
+    expected_data = {
+        "groups": [
+            {
+                "name": "Group A",
+                "members": [
+                    {"name": "Bob", "score": 92, "double_score": 184},
+                    {"name": "Alice", "score": 85, "double_score": 170}
+                ]
+            },
+            {
+                "name": "Group B",
+                "members": [
+                    {"name": "Charlie", "score": 88, "double_score": 176}
+                ]
+            }
+        ]
+    }
+
+    evaluator = FormulaEvaluator(schema)
+    data = evaluator.evaluate(data)
+    assert data == expected_data

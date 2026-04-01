@@ -5,6 +5,7 @@ __pycache__/
 *.pyc
 env/
 venv/
+.venv/
 .idea/
 .DS_Store
-json_formula_evaluator.egg-info/
+jsonschema_formulas.egg-info/

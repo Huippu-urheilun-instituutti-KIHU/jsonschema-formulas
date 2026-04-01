@@ -524,6 +524,56 @@ evaluator.evaluate(data)
 
 ```
 
+## Formulas inside arrays (`_this`)
+
+When a formula is defined inside an array item's schema, it can reference the current array element
+using the special keyword `_this`. This allows each item in the array to evaluate
+formulas based on its own field values, without needing to know its index or reference the parent array.
+
+```python
+from jsonschema_formulas import FormulaEvaluator
+
+schema = {
+    "type": "object",
+    "properties": {
+        "items": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string"},
+                    "score": {"type": "number"},
+                    "double_score": {
+                        "type": "number",
+                        "x-formula": "_this['score'] * 2"
+                    }
+                }
+            }
+        }
+    }
+}
+
+data = {
+    "items": [
+        {"name": "Bob", "score": 92},
+        {"name": "Alice", "score": 85},
+        {"name": "Charlie", "score": 88}
+    ]
+}
+
+evaluator = FormulaEvaluator(schema)
+evaluator.evaluate(data)
+# {
+#     'items': [
+#         {'name': 'Bob', 'score': 92, 'double_score': 184},
+#         {'name': 'Alice', 'score': 85, 'double_score': 170},
+#         {'name': 'Charlie', 'score': 88, 'double_score': 176}
+#     ]
+# }
+```
+
+Outside of arrays, `_this` refers to the root data object.
+
 ## Extend FormulaEvaluator
 
 You can extend the FormulaEvaluator class to add your own custom formula functions.
