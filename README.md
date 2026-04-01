@@ -23,7 +23,7 @@ Requirements
 ## Install
 
 ```bash
-pip install git+ssh://git@gitlab.com/k2315/jsonschema-formulas.git
+pip install git+https://github.com/Huippu-urheilun-instituutti-KIHU/jsonschema-formulas.git
 ```
 
 ## Usage
