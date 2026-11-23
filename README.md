@@ -7,7 +7,7 @@ Key features
 - Evaluate arithmetic and simple expressions that reference other properties.
 - Compute derived fields defined in the schema (e.g., sums, ratios, concatenations).
 - Integrates with JSON Schema types to ensure computed values match the declared type.
-- Designed for safe, deterministic evaluation (no arbitrary code execution).
+- Formulas are checked against an allowed subset of Python expressions before anything runs (see [Allowed formula syntax](#allowed-formula-syntax)).
 
 When to use
 
@@ -17,8 +17,38 @@ When to use
 
 Requirements
 
-- Python 3.8+
+- Python 3.12+
 - (See Install and Usage sections below for quick start and examples.)
+
+## Allowed formula syntax
+
+A formula is a single Python expression, limited to:
+
+- numbers, strings, `True`/`False`/`None`, and list, tuple and dict literals
+- the operators `+ - * / // %`, unary `-`/`+`/`not`, `and`/`or`, comparisons (`== != < <= > >= in not in is is not`) and `a if cond else b`
+- indexing and slicing: `outer['x']`, `values[-2:]`
+- calls to the [available functions](#available-functions) (and to an evaluator's own `@formula_function`s), with positional and keyword arguments
+- `lambda`, list comprehensions and generator expressions
+
+Everything else is refused, among it attribute access (`x.y`, so no methods either), names starting with `__`,
+`**`, bit operators, f-strings, `*args`/`**kwargs`, calling anything that is not an allowed function, and a lambda
+argument or loop variable named like a function. A formula may be at most 2000 characters (`max_formula_length`).
+
+Formulas are checked and compiled when a `FormulaEvaluator` is created: a schema with a formula that is not allowed
+raises `InvalidFormulaError` (a subclass of `FormulaEvaluationError`) listing every such formula with its place in the
+schema, before any formula runs. To refuse a schema before storing it, without evaluating anything:
+
+```python
+from jsonschema_formulas import FormulaEvaluator, InvalidFormulaError
+
+try:
+    FormulaEvaluator.check_schema(schema)  # or YourEvaluator.check_schema(...) for its own functions
+except InvalidFormulaError as e:
+    print(e)  # 'outer.bad': attribute access ('.x') is not allowed in formulas
+```
+
+The check is what keeps formulas from running arbitrary code; still only accept schemas from people you would let run
+calculations on your server. A formula can still use a lot of memory or time (e.g. `[0] * 100000 * 100000`).
 
 ## Install
 
